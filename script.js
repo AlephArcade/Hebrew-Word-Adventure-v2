@@ -324,6 +324,7 @@ const nikudChallenges = [
   ]
 ];
 
+
 // Declare gameContainer as a global variable (but don't initialize it yet)
 let gameContainer;
 
@@ -592,6 +593,240 @@ function showCorrectPartialWordAnimation() {
     
     // Animate the slots for the current word
     const slots = document.querySelectorAll('.answer-slot.current-part');
+    slots.forEach((slot, index) => {
+      setTimeout(() => {
+        slot.classList.add('correct');
+      }, index * 150); // Staggered animation
+    });
+  }, 100);
+}
+
+// Modified checkAnswer function for full phrase completion
+function checkAnswer() {
+  // For multi-word phrases that have already validated individual words
+  if (gameState.currentWordParts.length > 1 && gameState.currentPartIndex >= gameState.currentWordParts.length) {
+    // All words have been validated, mark as complete
+    handleCorrectAnswer();
+    return;
+  }
+  
+  // For single words or the last word of a phrase
+  // Build the word from selected letters
+  const selectedWord = gameState.selectedLetters.map(idx => gameState.shuffledLetters[idx]).join('');
+  
+  // Check if correct
+  if (selectedWord === gameState.currentWord.hebrew.replace(/\s+/g, '') || 
+      selectedWord === gameState.currentWordParts[gameState.currentPartIndex]) {
+    handleCorrectAnswer();
+  } else {
+    // Incorrect
+    gameState.lives = Math.max(0, gameState.lives - 1);
+        
+    // Check if game over
+    if (gameState.lives <= 0) {
+      gameOver();
+      return;
+    }
+        
+    showMessage('Try again! Lost 1 life.');
+    highlightWrongSequence();
+        
+    // Reset streak on error
+    gameState.streak = 0;
+    gameState.bonusActive = false;
+        
+    // Reset selection after a delay
+    setTimeout(() => {
+      gameState.selectedLetters = [];
+      renderGame();
+    }, 1000);
+  }
+}
+
+// Extracted common code for handling correct answers
+function handleCorrectAnswer() {
+  // Mark as animating to prevent further selection
+  gameState.animatingCorrect = true;
+  gameState.wordsCompleted++;
+      
+  // Add to completed words
+  const wordLength = getWordLengthForLevel(gameState.level);
+  gameState.completedWords[wordLength].push(gameState.currentWord.hebrew);
+      
+  // Update level progress
+  gameState.currentLevelProgress =
+    (gameState.completedWords[wordLength].length / wordBanks[wordLength].length) * 100;
+      
+  // Show complete word in slots with animation
+  showCorrectAnimation();
+      
+  // Calculate points with bonus if streak is active
+  let pointsEarned = wordLength * 10;
+      
+  // Apply bonus for streaks of 3 or more
+  if (gameState.bonusActive) {
+    pointsEarned = Math.round(pointsEarned * 1.5); // 50% bonus
+  }
+      
+  gameState.score += pointsEarned;
+  gameState.streak += 1;
+      
+  // Update bonus status after increasing streak
+  gameState.bonusActive = gameState.streak >= 3;
+      
+  // Show appropriate message
+  if (gameState.bonusActive) {
+    showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
+  } else {
+    showMessage(`AWESOME! +${pointsEarned} points!`);
+  }
+      
+  // Create celebration effect
+  createConfetti();
+      
+  // Check for level completion or next word after animation completes
+  setTimeout(() => {
+    // Check if we've completed all words at this level
+    if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
+      if (gameState.level < 9) {
+        // Instead of immediately going to next level, start a bonus round
+        startBonusRound();
+      } else {
+        // Game complete - all levels finished
+        gameState.completed = true;
+      }
+    } else {
+      // If not completed level, set up next word
+      if (!gameState.completed) {
+        setupWord();
+      } else {
+        renderGame(); // Show completion screen
+      }
+    }
+  }, 2000);
+}
+
+function gameOver() {
+  // Compute total words completed:
+  const totalCompleted = Object.values(gameState.completedWords).reduce((sum, arr) => sum + arr.length, 0);
+  showMessage('GAME OVER!');
+ 
+  setTimeout(() => {
+    gameContainer.innerHTML = `
+      <div class="game-over-screen">
+        <h1>GAME OVER</h1>
+        <p>Your final score: ${gameState.score}</p>
+        <p>Words completed: ${totalCompleted}</p>
+        <button class="primary-btn" id="restart-btn">PLAY AGAIN</button>
+      </div>
+    `;
+    document.getElementById('restart-btn').addEventListener('click', startGame);
+  }, 1500);
+}
+
+// Updated startBonusRound to randomize options once
+function startBonusRound() {
+  gameState.inBonusRound = true;
+  gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
+  
+  // Choose a random nikud challenge based on current level
+  // Use the current level's challenges, or level 6 challenges if level > 6
+  const challengeLevel = Math.min(gameState.level - 1, nikudChallenges.length - 1);
+  const levelChallenges = nikudChallenges[challengeLevel];
+  const randomIndex = Math.floor(Math.random() * levelChallenges.length);
+  gameState.currentBonusChallenge = levelChallenges[randomIndex];
+  
+  // Shuffle the options ONCE at the start and store in game state
+  gameState.shuffledBonusOptions = shuffleArray([...gameState.currentBonusChallenge.options]);
+  
+  // Start the timer
+  gameState.bonusTimer = setInterval(() => {
+    gameState.bonusTimeRemaining--;
+    if (gameState.bonusTimeRemaining <= 0) {
+      clearInterval(gameState.bonusTimer);
+      endBonusRound(false); // Timeout
+    }
+    renderGame(); // This will call renderBonusRound without re-shuffling
+  }, 1000);
+  
+  renderGame();
+}
+
+// Handle bonus round answer selection
+function handleBonusSelection(selected) {
+  clearInterval(gameState.bonusTimer); // Stop the timer
+  
+  const isCorrect = selected === gameState.currentBonusChallenge.correct;
+  
+  if (isCorrect) {
+    // Apply rewards
+    gameState.bonusReward.extraHints += 3;
+    gameState.hintsRemaining += 3;
+    gameState.score += 30;
+    
+    showMessage('CORRECT! +30 points and 3 bonus hints!');
+    createConfetti();
+    
+    // End the bonus round after a brief delay
+    setTimeout(() => {
+      endBonusRound(true);
+    }, 1500);
+  } else {
+    // Wrong answer: Show feedback with transliteration explanation and a continue button
+    gameContainer.innerHTML = `
+      <div class="bonus-feedback">
+        <p>Not quite right!</p>
+        <p>Hint: ${gameState.currentBonusChallenge.transliteration}</p>
+        <button id="continue-btn" class="primary-btn">Continue</button>
+      </div>
+    `;
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      endBonusRound(false);
+    });
+  }
+}
+
+// End the bonus round and move to the next level
+function endBonusRound(wasSuccessful) {
+  gameState.inBonusRound = false;
+  clearInterval(gameState.bonusTimer);
+  
+  // Move to next level
+  gameState.level += 1;
+  
+  // Check if we've reached beyond the maximum level
+  if (gameState.level > 9) {
+    // Set completed flag to true for game completion
+    gameState.completed = true;
+    renderGame(); // Show completion screen
+    return;
+  }
+  
+  // Otherwise, continue with normal level progression
+  gameState.currentLevelProgress = 0;
+  showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
+  
+  // Set up new word for the next level
+  setupWord();
+}
+
+function showCorrectAnimation() {
+  // Get the correct word in the right order
+  const correctWord = gameState.currentWord.hebrew;
+  
+  // Re-render to show all letters in slots
+  renderGame();
+  
+  // Apply animations to letter tiles and slots
+  setTimeout(() => {
+    // Animate the selected letter tiles
+    const tiles = document.querySelectorAll('.letter-tile.selected');
+    tiles.forEach(tile => {
+      tile.classList.add('correct-animation');
+    });
+    
+    // Animate the slots
+    const slots = document.querySelectorAll('.answer-slot');
     slots.forEach((slot, index) => {
       setTimeout(() => {
         slot.classList.add('correct');

@@ -713,6 +713,19 @@ h1, h2, h3 {
   animation: glow 1.5s ease-in-out infinite alternate;
 }
 
+/* Vertical layout for multi-word phrases */
+.answer-slots-vertical {
+  flex-direction: column;
+  gap: 15px;
+}
+
+.answer-word-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  direction: rtl;
+}
+
 @keyframes flicker {
   0% { transform: scaleY(1); }
   50% { transform: scaleY(0.95); }

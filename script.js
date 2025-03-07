@@ -1431,7 +1431,7 @@ function renderBonusRound() {
   });
 }
 
-// Updated renderGameScreen to handle multi-word phrases
+// Updated renderGameScreen to handle multi-word phrases with vertical layout
 function renderGameScreen() {
   // Calculate progress for current level
   const wordLength = getWordLengthForLevel(gameState.level);
@@ -1458,12 +1458,20 @@ function renderGameScreen() {
     `;
   }
 
+  // Check if we have multiple word parts
+  const isMultiWord = gameState.currentWordParts.length > 1;
+  
+  // Container class for vertical layout if needed
+  const slotsContainerClass = isMultiWord ? 'answer-slots-vertical' : '';
+  
   // Create answer slots for each part of the phrase
   let answerSlotsHTML = '';
   
   // Loop through all word parts
   gameState.currentWordParts.forEach((wordPart, partIndex) => {
-        
+    // Create row container for each word part
+    answerSlotsHTML += `<div class="answer-word-row">`;
+    
     // Create slots for this word part
     const isCurrentPart = partIndex === gameState.currentPartIndex;
     const isCompletedPart = partIndex < gameState.currentPartIndex;
@@ -1492,29 +1500,9 @@ function renderGameScreen() {
         </div>
       `;
     }
-    // Check if we have multiple word parts
-const isMultiWord = gameState.currentWordParts.length > 1;
-  
-// Container class for vertical layout if needed
-const slotsContainerClass = isMultiWord ? 'answer-slots-vertical' : '';
-  
-// Loop through all word parts
-gameState.currentWordParts.forEach((wordPart, partIndex) => {
-  // Create row container for each word part
-  answerSlotsHTML += `<div class="answer-word-row">`;
     
-  // Create slots for this word part
-  const isCurrentPart = partIndex === gameState.currentPartIndex;
-  const isCompletedPart = partIndex < gameState.currentPartIndex;
-  
-  // For each letter in this word part
-  for (let i = 0; i < wordPart.length; i++) {
-    // ... rest of the code for creating slots ...
-  }
-    
-  // Close row container
-  answerSlotsHTML += `</div>`;
-});
+    // Close row container
+    answerSlotsHTML += `</div>`;
   });
 
   // Create streak stars

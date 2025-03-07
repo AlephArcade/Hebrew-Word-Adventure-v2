@@ -10,6 +10,13 @@ const wordBanks = {
     { hebrew: 'חג', transliteration: 'chag', meaning: 'holiday' },
     { hebrew: 'שם', transliteration: 'shem', meaning: 'name' },
     { hebrew: 'עץ', transliteration: 'etz', meaning: 'tree' },
+    { hebrew: 'אש', transliteration: 'esh', meaning: 'fire' },
+    { hebrew: 'אי', transliteration: 'ee', meaning: 'island' },
+    { hebrew: 'עד', transliteration: 'ad', meaning: 'forever/eternity' },
+    { hebrew: 'או', transliteration: 'o', meaning: 'or' },
+    { hebrew: 'זה', transliteration: 'ze', meaning: 'this' },
+    { hebrew: 'של', transliteration: 'shel', meaning: 'of' },
+    { hebrew: 'גם', transliteration: 'gam', meaning: 'also' },
   ],
   3: [
     { hebrew: 'יום', transliteration: 'yom', meaning: 'day' },
@@ -22,6 +29,16 @@ const wordBanks = {
     { hebrew: 'נס', transliteration: 'nes', meaning: 'miracle' },
     { hebrew: 'אזן', transliteration: 'ozen', meaning: 'ear' },
     { hebrew: 'שמח', transliteration: 'sameach', meaning: 'happy' },
+    { hebrew: 'גדל', transliteration: 'gadal', meaning: 'grew' (verb root) },
+    { hebrew: 'למה', transliteration: 'lamah', meaning: 'why' },
+    { hebrew: 'חול', transliteration: 'chol', meaning: 'sand' },
+    { hebrew: 'אכל', transliteration: 'achal', meaning: 'he ate' },
+    { hebrew: 'חום', transliteration: 'chum', meaning: 'brown' (also "heat") },
+    { hebrew: 'כלב', transliteration: 'kelev', meaning: 'dog' },
+    { hebrew: 'עלה', transliteration: 'aleh', meaning: 'leaf' },
+    { hebrew: 'עוף', transliteration: 'ouf', meaning: 'bird/fowl' },
+    { hebrew: 'דבש', transliteration: 'dvash', meaning: 'honey' },
+    { hebrew: 'בגד', transliteration: 'beged', meaning: 'garment' },
   ],
   4: [
     { hebrew: 'שלום', transliteration: 'shalom', meaning: 'peace' },
@@ -32,17 +49,47 @@ const wordBanks = {
     { hebrew: 'אדר', transliteration: 'adar', meaning: 'Adar (month of Purim)' },
     { hebrew: 'רעשן', transliteration: 'ra\'ashan', meaning: 'noisemaker' },
     { hebrew: 'שושן', transliteration: 'shushan', meaning: 'Shushan (city)' },
+    { hebrew: 'חתול', transliteration: 'chatul', meaning: 'cat' },
+    { hebrew: 'בקשה', transliteration: 'bakasha', meaning: 'request' },
+    { hebrew: 'כביש', transliteration: 'kvish', meaning: 'road' },
+    { hebrew: 'מטבח', transliteration: 'mitbach', meaning: 'kitchen' },
+    { hebrew: 'שמים', transliteration: 'shamayim', meaning: 'sky/heavens' },
+    { hebrew: 'תפוח', transliteration: 'tapuach', meaning: 'apple' },
+    { hebrew: 'מחבר', transliteration: 'mechaber', meaning: 'author/compiler' },
+    { hebrew: 'ברוך', transliteration: 'baruch', meaning: 'blessed' },
+    { hebrew: 'ארון', transliteration: 'aron', meaning: 'closet/ark' },
+    { hebrew: 'גלות', transliteration: 'galut', meaning: 'exile' },
   ],
   5: [
     { hebrew: 'מרדכי', transliteration: 'mordechai', meaning: 'Mordechai (Purim hero)' },
     { hebrew: 'פורים', transliteration: 'purim', meaning: 'Purim holiday' },
     { hebrew: 'משלוח', transliteration: 'mishloach', meaning: 'sending (gifts)' },
     { hebrew: 'מגילה', transliteration: 'megila', meaning: 'scroll' },
+    { hebrew: 'תרגום', transliteration: 'targum', meaning: 'translation' },
+    { hebrew: 'תינוק', transliteration: 'tinok', meaning: 'baby' },
+    { hebrew: 'בריאה', transliteration: 'briyah', meaning: 'creation' },
+    { hebrew: 'מלאכה', transliteration: 'melacha', meaning: 'work/craft' },
+    { hebrew: 'פרחים', transliteration: 'prachim', meaning: 'flowers' },
+    { hebrew: 'צעצוע', transliteration: 'tsa\'tsu\'a', meaning: 'toy' },
+    { hebrew: 'חולצה', transliteration: 'chultza', meaning: 'shirt' },
+    { hebrew: 'בננות', transliteration: 'bananot', meaning: 'bananas' },
+    { hebrew: 'נמרים', transliteration: 'nemarim', meaning: 'tigers' },
+    { hebrew: 'ספינה', transliteration: 'sfina', meaning: 'ship' },
    ],
   6: [
     { hebrew: 'תחפושת', transliteration: 'tachposet', meaning: 'costume (Purim)' },
     { hebrew: 'אומנות', transliteration: 'omanut', meaning: 'art' },
     { hebrew: 'מוזיקה', transliteration: 'muzika', meaning: 'music' },
+    { hebrew: 'מחשבות', transliteration: 'machshavot', meaning: 'thoughts' },
+    { hebrew: 'מדרגות', transliteration: 'madregot', meaning: 'stairs' },
+    { hebrew: 'תפוחים', transliteration: 'tapuchim', meaning: 'apples' },
+    { hebrew: 'גלידות', transliteration: 'glidot', meaning: 'ice creams' },
+    { hebrew: 'כתובות', transliteration: 'ktuvot', meaning: 'addresses' },
+    { hebrew: 'פרסומת', transliteration: 'pirsomet', meaning: 'advertisement' },
+    { hebrew: 'שולחנות', transliteration: 'shulchanot', meaning: 'tables' },
+    { hebrew: 'פגישות', transliteration: 'pgishot', meaning: 'meetings' },
+    { hebrew: 'צעצועים', transliteration: 'tsatzu\'im', meaning: 'toys' },
+    { hebrew: 'משקפיים', transliteration: 'mishkafayim', meaning: 'glasses' },
   ],
   // 7-letter words (with space)
   7: [
@@ -50,7 +97,12 @@ const wordBanks = {
     { hebrew: 'כל טוב', transliteration: 'kol tuv', meaning: 'all the best' },
     { hebrew: 'שבת שלום', transliteration: 'shabbat shalom', meaning: 'peaceful sabbath' },
     { hebrew: 'בית ספר', transliteration: 'beit sefer', meaning: 'school (house of book)' },
-    { hebrew: 'יום טוב', transliteration: 'yom tov', meaning: 'good day/holiday' }
+    { hebrew: 'יום טוב', transliteration: 'yom tov', meaning: 'good day/holiday' },
+    { phrase: 'לילה טוב', transliteration: 'laila tov', meaning: 'good night' },
+    { phrase: 'מים קרים', transliteration: 'mayim karim', meaning: 'cold water' },
+    { phrase: 'מים חמים', transliteration: 'mayim chamim', meaning: 'warm water' },
+    { phrase: 'אש בוערת', transliteration: 'esh bo\'eret', meaning: 'burning fire' },
+    { phrase: 'ים סוער', transliteration: 'yam so\'er', meaning: 'stormy sea' }
   ],
   // 8-letter words (with space)
   8: [
@@ -58,15 +110,25 @@ const wordBanks = {
     { hebrew: 'ראש השנה', transliteration: 'rosh hashanah', meaning: 'new year' },
     { hebrew: 'ערב טוב', transliteration: 'erev tov', meaning: 'good evening' },
     { hebrew: 'בוקר טוב', transliteration: 'boker tov', meaning: 'good morning' },
-    { hebrew: 'תודה רבה', transliteration: 'todah rabah', meaning: 'thank you very much' }
-  ],
+    { hebrew: 'תודה רבה', transliteration: 'todah rabah', meaning: 'thank you very much' },
+    { phrase: 'יום הולדת', transliteration: 'yom huledet', meaning: 'birthday' },
+    { phrase: 'עולם חדש', transliteration: 'olam chadash', meaning: 'new world' },
+    { phrase: 'חיים יפים', transliteration: 'chayim yafim', meaning: 'beautiful life' },
+    { phrase: 'עיר גדולה', transliteration: 'ir gdola', meaning: 'big city' },
+    { phrase: 'עין כחולה', transliteration: 'ayin kchula', meaning: 'blue eye' }
+   ],
   // 9-letter words (with space)
   9: [
     { hebrew: 'שנה טובה', transliteration: 'shanah tovah', meaning: 'good year' },
     { hebrew: 'לילה טוב', transliteration: 'lailah tov', meaning: 'good night' },
     { hebrew: 'שלום עליכם', transliteration: 'shalom aleichem', meaning: 'peace be upon you' },
     { hebrew: 'מה שלומך', transliteration: 'ma shlomcha', meaning: 'how are you' },
-    { hebrew: 'פורים שמח', transliteration: 'purim sameach', meaning: 'happy purim' }
+    { hebrew: 'פורים שמח', transliteration: 'purim sameach', meaning: 'happy purim' },
+    { phrase: 'חגים שמחים', transliteration: 'chagim sameach', meaning: 'happy holidays' },
+    { phrase: 'מים מתוקים', transliteration: 'mayim metukim', meaning: 'sweet water' },
+    { phrase: 'פנים שמחים', transliteration: 'panim sameachim', meaning: 'cheerful face' },
+    { phrase: 'חיים מלאים', transliteration: 'chayim meleim', meaning: 'full life' },
+    { phrase: 'ידיים חזקות', transliteration: 'yadaim chazakot', meaning: 'strong hands' }
   ]
 };
 

@@ -1378,3 +1378,274 @@ document.addEventListener('DOMContentLoaded', function() {
   // Start the game with the start screen
   renderGame();
 });
+
+// Add to the end of script.js
+
+// Developer mode implementation
+let devModeClickCounter = 0;
+let devModeTimer = null;
+let inDevMode = false;
+
+// Function to handle developer mode activation
+function handleDevModeActivation(e) {
+  // Only activate on title screen
+  if (gameState.active) return;
+  
+  // Reset timer on each click
+  clearTimeout(devModeTimer);
+  
+  // Increment counter
+  devModeClickCounter++;
+  
+  // Set timer to reset counter after 2 seconds of inactivity
+  devModeTimer = setTimeout(() => {
+    devModeClickCounter = 0;
+  }, 2000);
+  
+  // Check if we've reached the required number of clicks (5)
+  if (devModeClickCounter >= 5) {
+    devModeClickCounter = 0;
+    clearTimeout(devModeTimer);
+    showDevModeScreen();
+  }
+}
+
+// Function to show developer mode screen
+function showDevModeScreen() {
+  inDevMode = true;
+  
+  // Create the level selection interface
+  let levelButtonsHTML = '';
+  
+  // Create buttons for each level (1-9)
+  for (let i = 1; i <= 9; i++) {
+    const wordLength = i + 1; // Level 1 = 2-letter words, etc.
+    const wordsInLevel = wordBanks[wordLength] ? wordBanks[wordLength].length : 0;
+    
+    levelButtonsHTML += `
+      <div class="dev-level-btn" data-level="${i}">
+        <span class="level-number">Level ${i}</span>
+        <span class="level-info">${wordLength}-letter words (${wordsInLevel})</span>
+      </div>
+    `;
+  }
+  
+  // Render the developer mode screen
+  gameContainer.innerHTML = `
+    <div class="dev-mode-screen">
+      <h2>Developer Mode</h2>
+      <p>Select a level to skip to:</p>
+      
+      <div class="dev-level-buttons">
+        ${levelButtonsHTML}
+      </div>
+      
+      <div class="dev-options">
+        <button class="dev-option-btn" id="add-hints-btn">+ 10 Hints</button>
+        <button class="dev-option-btn" id="full-health-btn">Restore Health</button>
+      </div>
+      
+      <button class="primary-btn" id="dev-back-btn">Back to Game</button>
+    </div>
+  `;
+  
+  // Add event listeners to level buttons
+  document.querySelectorAll('.dev-level-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const level = parseInt(btn.dataset.level);
+      skipToLevel(level);
+    });
+  });
+  
+  // Add hint button listener
+  document.getElementById('add-hints-btn').addEventListener('click', () => {
+    gameState.hintsRemaining += 10;
+    showDevMessage('Added 10 hints');
+  });
+  
+  // Add health button listener
+  document.getElementById('full-health-btn').addEventListener('click', () => {
+    gameState.lives = gameState.maxLives;
+    showDevMessage('Health restored');
+  });
+  
+  // Add back button listener
+  document.getElementById('dev-back-btn').addEventListener('click', () => {
+    inDevMode = false;
+    renderGame();
+  });
+}
+
+// Function to skip to a specific level
+function skipToLevel(level) {
+  if (!gameState.active) {
+    // If game hasn't started yet, initialize it first
+    startGame();
+  }
+  
+  // Set the selected level
+  gameState.level = level;
+  gameState.currentLevelProgress = 0;
+  
+  // Reset level-specific data
+  for (let i = 2; i <= 9; i++) {
+    if (i < level + 1) {
+      // Mark all words in previous levels as completed
+      const wordsInLevel = wordBanks[i] || [];
+      gameState.completedWords[i] = wordsInLevel.map(word => word.hebrew);
+    } else {
+      // Reset current and future levels
+      gameState.completedWords[i] = [];
+    }
+  }
+  
+  // Show success message
+  showDevMessage(`Skipped to Level ${level}`);
+  
+  // Setup a new word for this level
+  setupWord();
+  
+  // Exit dev mode
+  inDevMode = false;
+}
+
+// Show a temporary message for dev mode actions
+function showDevMessage(message) {
+  const devMessage = document.createElement('div');
+  devMessage.className = 'dev-message';
+  devMessage.textContent = message;
+  document.body.appendChild(devMessage);
+  
+  setTimeout(() => {
+    if (devMessage.parentNode) {
+      devMessage.parentNode.removeChild(devMessage);
+    }
+  }, 2000);
+}
+
+// Update the initialization code to add the secret tap detector
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize the gameContainer 
+  gameContainer = document.getElementById('game-container');
+  
+  // Add styles
+  addHeartStyles();
+  addMultiWordStyles();
+  addDevModeStyles();
+  
+  if (!gameContainer) {
+    console.error('Could not find game-container element!');
+    return;
+  }
+  
+  // Add secret tap detector to the game container
+  gameContainer.addEventListener('click', handleDevModeActivation);
+  
+  // Start the game with the start screen
+  renderGame();
+});
+
+// Add the dev mode styles
+function addDevModeStyles() {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    /* Dev mode screen styles */
+    .dev-mode-screen {
+      background-color: rgba(0, 0, 0, 0.95);
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid #FF5722;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .dev-mode-screen h2 {
+      color: #FF5722;
+      margin-bottom: 10px;
+    }
+    
+    .dev-level-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+      width: 100%;
+    }
+    
+    .dev-level-btn {
+      background-color: #333;
+      border: 1px solid #666;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+    }
+    
+    .dev-level-btn:hover {
+      background-color: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .dev-level-btn .level-number {
+      font-weight: bold;
+      font-size: 16px;
+      color: #FFF8E1;
+      margin-bottom: 5px;
+    }
+    
+    .dev-level-btn .level-info {
+      font-size: 12px;
+      color: #AAA;
+    }
+    
+    .dev-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .dev-option-btn {
+      background-color: #2c3e50;
+      color: #FFF8E1;
+      border: 1px solid #FFF8E1;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    .dev-option-btn:hover {
+      background-color: #34495e;
+    }
+    
+    .dev-message {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 87, 34, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      z-index: 1000;
+      animation: fadeIn 0.3s, fadeOut 0.3s 1.7s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, 20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translate(-50%, 0); }
+      to { opacity: 0; transform: translate(-50%, -20px); }
+    }
+  `;
+  document.head.appendChild(styleElement);
+}

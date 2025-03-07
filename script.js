@@ -33,7 +33,7 @@ const wordBanks = {
     { hebrew: 'למה', transliteration: 'lamah', meaning: 'why' },
     { hebrew: 'חול', transliteration: 'chol', meaning: 'sand' },
     { hebrew: 'אכל', transliteration: 'achal', meaning: 'he ate' },
-    { hebrew: 'חום', transliteration: 'chum', meaning: 'brown') },
+    { hebrew: 'חום', transliteration: 'chum', meaning: 'brown' },
     { hebrew: 'כלב', transliteration: 'kelev', meaning: 'dog' },
     { hebrew: 'עלה', transliteration: 'aleh', meaning: 'leaf' },
     { hebrew: 'עוף', transliteration: 'ouf', meaning: 'bird/fowl' },

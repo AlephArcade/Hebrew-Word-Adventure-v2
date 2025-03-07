@@ -29,7 +29,7 @@ const wordBanks = {
     { hebrew: 'נס', transliteration: 'nes', meaning: 'miracle' },
     { hebrew: 'אזן', transliteration: 'ozen', meaning: 'ear' },
     { hebrew: 'שמח', transliteration: 'sameach', meaning: 'happy' },
-    { hebrew: 'גדל', transliteration: 'gadal', meaning: 'grew' (verb root) },
+    { hebrew: 'גדל', transliteration: 'gadal', meaning: 'grew' },
     { hebrew: 'למה', transliteration: 'lamah', meaning: 'why' },
     { hebrew: 'חול', transliteration: 'chol', meaning: 'sand' },
     { hebrew: 'אכל', transliteration: 'achal', meaning: 'he ate' },

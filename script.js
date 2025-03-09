@@ -463,8 +463,8 @@ function setupWord() {
   // For multi-word phrases, it will contain all the individual words
   
   // Shuffle letters for current word/phrase (no spaces for shuffling)
-  const lettersArray = gameState.currentWord.hebrew.replace(/\s+/g, '').split('');
-  gameState.shuffledLetters = shuffleArray(lettersArray);
+  const textToShuffle = gameState.currentWord.hebrew || gameState.currentWord.phrase;
+  const lettersArray = textToShuffle.replace(/\s+/g, '').split('');
   
   // Reset selected letters and other states
   gameState.selectedLetters = [];
@@ -687,7 +687,7 @@ function handleCorrectAnswer() {
       
   // Add to completed words
   const wordLength = getWordLengthForLevel(gameState.level);
-  gameState.completedWords[wordLength].push(gameState.currentWord.hebrew);
+  gameState.completedWords[wordLength].push(gameState.currentWord.hebrew || gameState.currentWord.phrase);
       
   // Update level progress
     const selectedWordsCount = gameState.selectedWordsForLevel[wordLength].length;

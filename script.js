@@ -453,7 +453,10 @@ function setupWord() {
   gameState.currentWord = availableWords[randomIndex];
   
   // For multi-word phrases, track individual words
-  gameState.currentWordParts = gameState.currentWord.hebrew.split(' ');
+  gameState.currentWordParts = gameState.currentWord.hebrew ? 
+    gameState.currentWord.hebrew.split(' ') : 
+    gameState.currentWord.phrase.split(' ');
+  
   gameState.currentPartIndex = 0; // Start with first word
   
   // For single words, this will be an array with just one element
@@ -913,69 +916,6 @@ function checkAnswer() {
       renderGame();
     }, 1000);
   }
-}
-
-// Extracted common code for handling correct answers
-function handleCorrectAnswer() {
-  // Mark as animating to prevent further selection
-  gameState.animatingCorrect = true;
-  gameState.wordsCompleted++;
-      
-  // Add to completed words
-  const wordLength = getWordLengthForLevel(gameState.level);
-  gameState.completedWords[wordLength].push(gameState.currentWord.hebrew);
-      
-  // Update level progress
-  gameState.currentLevelProgress =
-    (gameState.completedWords[wordLength].length / wordBanks[wordLength].length) * 100;
-      
-  // Show complete word in slots with animation
-  showCorrectAnimation();
-      
-  // Calculate points with bonus if streak is active
-  let pointsEarned = wordLength * 10;
-      
-  // Apply bonus for streaks of 3 or more
-  if (gameState.bonusActive) {
-    pointsEarned = Math.round(pointsEarned * 1.5); // 50% bonus
-  }
-      
-  gameState.score += pointsEarned;
-  gameState.streak += 1;
-      
-  // Update bonus status after increasing streak
-  gameState.bonusActive = gameState.streak >= 3;
-      
-  // Show appropriate message
-  if (gameState.bonusActive) {
-    showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
-  } else {
-    showMessage(`AWESOME! +${pointsEarned} points!`);
-  }
-      
-  // Create celebration effect
-  createConfetti();
-      
-  // Check for level completion or next word after animation completes
-  setTimeout(() => {
-    // Check if we've completed all words at this level
-    if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
-      if (gameState.level < 9) {
-        // Instead of immediately going to next level, start a bonus round
-        startBonusRound();
-      } else {
-        // Game complete - all levels finished
-        gameState.completed = true;
-      }
-    } else {
-      // If not completed level, set up next word
-      if (!gameState.completed) {
-        setupWord();
-      } else {
-        renderGame(); // Show completion screen
-      }
-    }
-  }, 2000);
 }
 
 function gameOver() {
@@ -1846,15 +1786,6 @@ function skipToLevel(level) {
   inDevMode = false;
 }
   
-  // Show success message
-  showDevMessage(`Skipped to Level ${level}`);
-  
-  // Setup a new word for this level
-  setupWord();
-  
-  // Exit dev mode
-  inDevMode = false;
-}
 
 // Show a temporary message for dev mode actions
 function showDevMessage(message) {

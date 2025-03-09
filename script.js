@@ -720,8 +720,11 @@ function handleCorrectAnswer() {
       
   // Check for level completion or next word after animation completes
   setTimeout(() => {
-    // Check if we've completed all words at this level
-    if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
+    // Check if we've completed all selected words at this level
+    const completedAll = gameState.completedWords[wordLength].length >= 
+      gameState.selectedWordsForLevel[wordLength].length;
+    
+    if (completedAll) {
       if (gameState.level < 9) {
         // Instead of immediately going to next level, start a bonus round
         startBonusRound();
@@ -738,6 +741,7 @@ function handleCorrectAnswer() {
       }
     }
   }, 2000);
+    
 }
 
 function gameOver() {
@@ -1471,7 +1475,8 @@ function renderBonusRound() {
 function renderGameScreen() {
   // Calculate progress for current level
   const wordLength = getWordLengthForLevel(gameState.level);
-  const totalWordsInLevel = wordBanks[wordLength].length;
+  const selectedWordsInLevel = gameState.selectedWordsForLevel[wordLength] || [];
+  const totalWordsInLevel = selectedWordsInLevel.length;
   const completedWordsInLevel = gameState.completedWords[wordLength].length;
   const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
 
@@ -1669,15 +1674,14 @@ function renderStartScreen() {
 }
 
 function renderCompletedScreen() {
-  // Calculate total words learned
-  const totalWords = Object.keys(wordBanks).reduce((sum, level) =>
-    sum + wordBanks[level].length, 0
-  );
+   // Calculate total words completed
+  const totalWordsCompleted = Object.values(gameState.completedWords)
+    .reduce((sum, arr) => sum + arr.length, 0);
   
   gameContainer.innerHTML = `
     <div class="complete-screen">
       <h1>🏆 QUEST COMPLETE! 🏆</h1>
-      <p>Amazing job! You've mastered all ${totalWords} Hebrew words!</p>
+      <p>Amazing job! You've mastered ${totalWordsCompleted} Hebrew words!</p>
       <p style="font-size: 24px; margin: 20px 0;">Final Score: <span style="color: #FFEB3B; font-weight: bold;">${gameState.score}</span></p>
       <button class="primary-btn" id="restart-btn">PLAY AGAIN</button>
     </div>
@@ -1825,17 +1829,22 @@ function skipToLevel(level) {
   gameState.level = level;
   gameState.currentLevelProgress = 0;
   
-  // Reset level-specific data
+  // Reset level-specific data including selectedWordsForLevel
+  gameState.selectedWordsForLevel = {};
+  
   for (let i = 2; i <= 9; i++) {
-    if (i < level + 1) {
-      // Mark all words in previous levels as completed
-      const wordsInLevel = wordBanks[i] || [];
-      gameState.completedWords[i] = wordsInLevel.map(word => word.hebrew);
-    } else {
-      // Reset current and future levels
-      gameState.completedWords[i] = [];
-    }
+    gameState.completedWords[i] = [];
   }
+  
+  // Show success message
+  showDevMessage(`Skipped to Level ${level}`);
+  
+  // Setup a new word for this level
+  setupWord();
+  
+  // Exit dev mode
+  inDevMode = false;
+}
   
   // Show success message
   showDevMessage(`Skipped to Level ${level}`);

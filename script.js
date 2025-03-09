@@ -364,7 +364,8 @@ let gameState = {
   currentWordParts: [], // Array of individual words in the phrase
   currentPartIndex: 0,  // Which word we're currently solving (0=first, 1=second)
   completedLetters: [], // Letters already used in completed words
-  partialWordCompleted: false // Flag for animation between words
+  partialWordCompleted: false, // Flag for animation between words
+  selectedWordsForLevel: {}
 };
 
 // Fixed startGame function that properly initializes all properties
@@ -406,7 +407,8 @@ function startGame() {
     currentWordParts: [],
     currentPartIndex: 0,
     completedLetters: [],
-    partialWordCompleted: false
+    partialWordCompleted: false,
+    selectedWordsForLevel: {} // Initialize the selected words property
   };
     
   setupWord();
@@ -416,10 +418,16 @@ function startGame() {
 function setupWord() {
   const wordLength = getWordLengthForLevel(gameState.level);
   const wordsForLevel = wordBanks[wordLength];
+
+   // NEW: Check if we already have selected words for this level
+  if (!gameState.selectedWordsForLevel[wordLength]) {
+    // Select random words for this level (max 10)
+    gameState.selectedWordsForLevel[wordLength] = selectRandomWordsForLevel(gameState.level);
+  }
   
   // Get words that haven't been completed yet
-  const availableWords = wordsForLevel.filter(word =>
-    !gameState.completedWords[wordLength].includes(word.hebrew)
+   const availableWords = gameState.selectedWordsForLevel[wordLength].filter(word =>
+    !gameState.completedWords[wordLength].includes(word.hebrew || word.phrase)
   );
   
   // If no words left at this level
@@ -480,6 +488,33 @@ function shuffleArray(array) {
 // Update getWordLengthForLevel to handle levels 1-9
 function getWordLengthForLevel(level) {
   return level + 1; // Level 1 = 2-letter words, Level 8 = 9-letter words
+}
+
+// Function to select random words for a level (max 10)
+function selectRandomWordsForLevel(level) {
+  const wordLength = getWordLengthForLevel(level);
+  const allWordsForLevel = wordBanks[wordLength];
+  
+  // If there are 10 or fewer words in total, use all of them
+  if (allWordsForLevel.length <= 10) {
+    return [...allWordsForLevel];
+  }
+  
+  // Otherwise, randomly select 10 words
+  const selectedWords = [];
+  const indices = new Set();
+  
+  while (selectedWords.length < 10) {
+    const randomIndex = Math.floor(Math.random() * allWordsForLevel.length);
+    
+    // Only add each word once
+    if (!indices.has(randomIndex)) {
+      indices.add(randomIndex);
+      selectedWords.push(allWordsForLevel[randomIndex]);
+    }
+  }
+  
+  return selectedWords;
 }
 
 // Modified handleLetterSelect to handle multi-word phrases
@@ -652,9 +687,10 @@ function handleCorrectAnswer() {
   gameState.completedWords[wordLength].push(gameState.currentWord.hebrew);
       
   // Update level progress
-  gameState.currentLevelProgress =
-    (gameState.completedWords[wordLength].length / wordBanks[wordLength].length) * 100;
-      
+    const selectedWordsCount = gameState.selectedWordsForLevel[wordLength].length;
+    gameState.currentLevelProgress =
+      (gameState.completedWords[wordLength].length / selectedWordsCount) * 100;
+
   // Show complete word in slots with animation
   showCorrectAnimation();
       

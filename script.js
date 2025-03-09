@@ -466,6 +466,8 @@ function setupWord() {
   const textToShuffle = gameState.currentWord.hebrew || gameState.currentWord.phrase;
   const lettersArray = textToShuffle.replace(/\s+/g, '').split('');
   
+  gameState.shuffledLetters = shuffleArray(lettersArray);
+  
   // Reset selected letters and other states
   gameState.selectedLetters = [];
   gameState.completedLetters = [];

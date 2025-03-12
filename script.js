@@ -1276,7 +1276,37 @@ const wordBanks = {
     `;
     document.head.appendChild(styleElement);
   }
-  
+
+// Add styles for the transliteration toggle button
+function addTransliterationToggleStyles() {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .icon-button.transliteration-btn {
+      background-color: transparent;
+      position: relative;
+    }
+    
+    .icon-button.transliteration-btn.active {
+      background-color: rgba(255, 235, 59, 0.2);
+      border-color: #FFEB3B;
+    }
+    
+    .icon-button.transliteration-btn .toggle-indicator {
+      position: absolute;
+      bottom: -5px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #FFEB3B;
+    }
+    
+    /* Adjust the content area for new spacing */
+    .word-to-find {
+      min-height: 36px; /* Ensure consistent height with/without text */
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
   // Add multi-word styles
   function addMultiWordStyles() {
     const styleElement = document.createElement('style');

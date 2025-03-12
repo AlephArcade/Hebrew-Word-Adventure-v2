@@ -340,6 +340,7 @@ const wordBanks = {
     completed: false,
     animatingCorrect: false,
     wordsCompleted: 0,
+    showTransliteration: true,
     completedWords: {
       2: [],
       3: [],
@@ -1580,9 +1581,29 @@ const wordBanks = {
             </svg>
             <div class="hint-count">${gameState.hintsRemaining}</div>
           </button>
+
+          <button class="icon-button transliteration-btn ${gameState.showTransliteration ? 'active' : ''}" id="transliteration-btn" title="${gameState.showTransliteration ? 'Hide Transliteration' : 'Show Transliteration'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            <div class="toggle-indicator">${gameState.showTransliteration ? 'On' : 'Off'}</div>
+          </button>
+
         </div>
               
         <div class="message"></div>
+      </div>
+    `;
+
+    // Update the word-to-find section to conditionally show transliteration
+    const wordToFindHTML = `
+      <div class="word-to-find">
+        ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
+      </div>
+      
+      <div class="word-meaning">
+        ${gameState.currentWord.meaning}
       </div>
     `;
     
@@ -1599,12 +1620,20 @@ const wordBanks = {
     // Add button event listeners
     document.getElementById('reset-btn').addEventListener('click', resetSelection);
     document.getElementById('hint-btn').addEventListener('click', getHint);
+    document.getElementById('transliteration-btn').addEventListener('click', toggleTransliteration);
   }
-  
+
+    document.getElementById('transliteration-btn').addEventListener('click', toggleTransliteration);
+
+  // Add this function to toggle the transliteration visibility
+    function toggleTransliteration() {
+      gameState.showTransliteration = !gameState.showTransliteration;
+      renderGame();
+    }
   function renderStartScreen() {
     gameContainer.innerHTML = `
       <div class="start-screen">
-        <h1>Hebrew Shuffle</h1>
+        <h1>Hebrew Word Adventure</h1>
         <p>Master Hebrew letters by putting them in the right order!</p>
         <p>Includes special Purim words!</p>
         <button class="primary-btn" id="start-btn">START QUEST</button>
@@ -1651,6 +1680,7 @@ const wordBanks = {
     
     // Add styles
     addHeartStyles();
+    addTransliterationToggleStyles();
     addMultiWordStyles();
     
     if (!gameContainer) {

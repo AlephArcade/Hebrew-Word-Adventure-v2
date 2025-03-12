@@ -1467,7 +1467,7 @@ function addTransliterationToggleStyles() {
           </div>
           
           <div class="word-to-find">
-            ${zgameState.currentWord.meaning}
+            ${gameState.currentWord.meaning}
           </div>
         `;
       

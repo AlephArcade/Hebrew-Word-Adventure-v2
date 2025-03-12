@@ -341,6 +341,7 @@ const wordBanks = {
     animatingCorrect: false,
     wordsCompleted: 0,
     showTransliteration: true,
+    progressSegments: Array(10).fill(false), 
     completedWords: {
       2: [],
       3: [],
@@ -384,6 +385,7 @@ const wordBanks = {
       completed: false,
       animatingCorrect: false,
       showTransliteration: true,
+      progressSegments: Array(10).fill(false), 
       wordsCompleted: 0,
       completedWords: {
         2: [],
@@ -578,97 +580,53 @@ function createProgressBar() {
 }
 
 // Function to update progress bar based on level and progress
-function updateProgressBar(container, level, progress) {
-  if (!container) return;
+// Update the progress bar function to track correct words
+function updateProgressBar() {
+  // Find segments
+  const segments = document.querySelectorAll('.progress-segment');
+  if (!segments.length) return;
   
-  const segments = container.querySelectorAll('.progress-segment');
-  const totalSegments = segments.length;
+  // Get the total number of words completed (across all levels)
+  const totalWordsCompleted = gameState.wordsCompleted;
   
-  // Calculate completed segments
-  // Level 1-9 maps to segments 0-8
-  const completedFullSegments = Math.min(level - 1, totalSegments);
+  // Determine how many segments should be filled (modulo 10)
+  const segmentsToFill = totalWordsCompleted % 10;
   
-  // Fill completed segments
+  // Fill the segments based on words completed
   segments.forEach((segment, index) => {
     // Clear any previous animations
     segment.classList.remove('pulse');
     
-    // For segments before current level
-    if (index < completedFullSegments) {
-      if (!segment.classList.contains('filled')) {
-        segment.classList.add('filled');
-      }
-    }
-    // For current level's segment
-    else if (index === completedFullSegments) {
-      // If level is complete
-      if (progress >= 100) {
-        if (!segment.classList.contains('filled')) {
-          segment.classList.add('filled');
-          segment.classList.add('pulse');
-          
-          // Special effect for last segment
-          if (index === totalSegments - 1) {
-            celebrateCompletion(container);
-          }
-        }
-      }
-    }
-    // Future segments
-    else {
+    // Fill segments for completed words
+    if (index < segmentsToFill) {
+      segment.classList.add('filled');
+      // Update gameState to persist the filled status
+      gameState.progressSegments[index] = true;
+    } else {
       segment.classList.remove('filled');
+      // Update gameState
+      gameState.progressSegments[index] = false;
+    }
+    
+    // Add pulse animation to the most recently completed word
+    if (index === segmentsToFill - 1 && segmentsToFill > 0) {
+      segment.classList.add('pulse');
     }
   });
-}
-
-// Function to create sparkle effect
-function createSparkle(element) {
-  const sparkle = document.createElement('div');
-  sparkle.className = 'progress-sparkle';
   
-  // Random position
-  const x = (Math.random() - 0.5) * 50;
-  const y = (Math.random() - 0.5) * 50;
-  
-  sparkle.style.setProperty('--x', `${x}px`);
-  sparkle.style.setProperty('--y', `${y}px`);
-  sparkle.style.animation = `sparkle ${Math.random() * 0.5 + 0.5}s ease-out forwards`;
-  
-  // Random start position
-  sparkle.style.left = `${Math.random() * 100}%`;
-  sparkle.style.top = '50%';
-  
-  element.appendChild(sparkle);
-  
-  // Clean up
-  setTimeout(() => {
-    if (sparkle.parentNode) {
-      sparkle.parentNode.removeChild(sparkle);
-    }
-  }, 1000);
-}
-
-// Function to celebrate completion
-function celebrateCompletion(container) {
-  // Create glow effect
-  const glow = document.createElement('div');
-  glow.className = 'progress-glow';
-  glow.style.animation = 'glow 1s ease-out';
-  container.appendChild(glow);
-  
-  // Create multiple sparkles
-  for (let i = 0; i < 15; i++) {
-    setTimeout(() => {
-      createSparkle(container);
-    }, i * 50);
+  // If all 10 segments are filled, celebrate!
+  if (segmentsToFill === 0 && totalWordsCompleted > 0 && totalWordsCompleted >= 10) {
+    celebrateCompletion(document.querySelector('.progress-segments'));
+    
+    // Flash all segments briefly to indicate reset
+    segments.forEach((segment, index) => {
+      segment.classList.add('filled');
+      setTimeout(() => {
+        segment.classList.remove('filled');
+        gameState.progressSegments[index] = false;
+      }, 500);
+    });
   }
-  
-  // Clean up
-  setTimeout(() => {
-    if (glow.parentNode) {
-      glow.parentNode.removeChild(glow);
-    }
-  }, 1000);
 }
 
   // New function to check partial answers (first word in multi-word phrase)
@@ -1573,10 +1531,11 @@ function createProgressBarHTML() {
   
   let segmentsHTML = '';
   
-  // Create 10 empty segments
+  // Create 10 segments, using the gameState to determine if filled
   for (let i = 0; i < totalSegments; i++) {
+    const isFilled = gameState.progressSegments && gameState.progressSegments[i] ? 'filled' : '';
     segmentsHTML += `
-      <div class="progress-segment" data-index="${i}"></div>
+      <div class="progress-segment ${isFilled}" data-index="${i}"></div>
     `;
   }
   

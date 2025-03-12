@@ -839,11 +839,12 @@ function celebrateCompletion(container) {
         
     // Create celebration effect
     createConfetti();
-
-    setTimeout(updateProgressBar, 100);
       
       // Update the progress bar with animation
         updateProgressBar();
+
+      // Update the progress bar with the completed word
+      setTimeout(updateProgressBar, 100);
       
     // Check for level completion or next word after animation completes
     setTimeout(() => {
@@ -1565,27 +1566,17 @@ function addTransliterationToggleStyles() {
     });
   }
 
-// Helper function to create progress bar HTML
-function createProgressBarHTML(level, progressPercentage) {
-  // We'll use 10 segments for the progress bar
+// Modify this function to create progress segments for individual words
+function createProgressBarHTML() {
+  // We'll use 10 segments for the progress bar (10 words at a time)
   const totalSegments = 10;
-  
-  // Calculate filled segments (levels 1-9 correspond to segments 0-8)
-  const filledSegments = level - 1;
   
   let segmentsHTML = '';
   
+  // Create 10 empty segments
   for (let i = 0; i < totalSegments; i++) {
-    // Determine if this segment should be filled
-    const isFilled = i < filledSegments;
-    // For the current level's segment, fill it only if progress is 100%
-    const isCurrentLevelFilled = i === filledSegments && progressPercentage >= 100;
-    
-    // Build class name
-    const segmentClass = (isFilled || isCurrentLevelFilled) ? 'filled' : '';
-    
     segmentsHTML += `
-      <div class="progress-segment ${segmentClass}" data-index="${i}"></div>
+      <div class="progress-segment" data-index="${i}"></div>
     `;
   }
   
@@ -1596,79 +1587,50 @@ function createProgressBarHTML(level, progressPercentage) {
   `;
 }
 
-// Helper function to update progress bar after rendering
+// Update the progress bar function to track correct words
 function updateProgressBar() {
   // Find segments
   const segments = document.querySelectorAll('.progress-segment');
   if (!segments.length) return;
   
-  const wordLength = getWordLengthForLevel(gameState.level);
-  const selectedWordsInLevel = gameState.selectedWordsForLevel[wordLength] || [];
-  const totalWordsInLevel = selectedWordsInLevel.length;
-  const completedWordsInLevel = gameState.completedWords[wordLength].length;
-  const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
+  // Get the total number of words completed (across all levels)
+  const totalWordsCompleted = gameState.wordsCompleted;
   
-  // Get current level index (0-based)
-  const currentLevelIndex = gameState.level - 1;
+  // Determine how many segments should be filled (modulo 10)
+  const segmentsToFill = totalWordsCompleted % 10;
   
-  // Check if the progress just reached 100%
-  const isLevelJustCompleted = progressPercentage >= 100 && 
-                               !segments[currentLevelIndex].classList.contains('filled');
-  
-  // Update the current level's segment if needed
-  if (isLevelJustCompleted && currentLevelIndex < segments.length) {
-    segments[currentLevelIndex].classList.add('filled');
-    segments[currentLevelIndex].classList.add('pulse');
+  // Fill the segments based on words completed
+  segments.forEach((segment, index) => {
+    // Clear any previous animations
+    segment.classList.remove('pulse');
     
-    // If this is the last segment, add celebration
-    if (currentLevelIndex === segments.length - 1) {
-      celebrateCompletion();
+    // Fill segments for completed words
+    if (index < segmentsToFill) {
+      segment.classList.add('filled');
+    } else {
+      segment.classList.remove('filled');
     }
+    
+    // Add pulse animation to the most recently completed word
+    if (index === segmentsToFill - 1 && segmentsToFill > 0) {
+      segment.classList.add('pulse');
+    }
+  });
+  
+  // If all 10 segments are filled, celebrate!
+  if (segmentsToFill === 0 && totalWordsCompleted > 0) {
+    celebrateCompletion(document.querySelector('.progress-segments'));
+    
+    // Flash all segments briefly to indicate reset
+    segments.forEach(segment => {
+      segment.classList.add('filled');
+      setTimeout(() => {
+        segment.classList.remove('filled');
+      }, 500);
+    });
   }
 }
 
-// Helper function for level completion celebration
-function celebrateCompletion() {
-  const progressBar = document.querySelector('.progress-segments');
-  if (!progressBar) return;
-  
-  // Create some sparkle elements
-  for (let i = 0; i < 15; i++) {
-    setTimeout(() => {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'sparkle';
-      sparkle.style.position = 'absolute';
-      sparkle.style.width = '4px';
-      sparkle.style.height = '4px';
-      sparkle.style.backgroundColor = '#FFEB3B';
-      sparkle.style.borderRadius = '50%';
-      sparkle.style.left = `${Math.random() * 100}%`;
-      sparkle.style.top = '50%';
-      
-      // Set random animation
-      const x = (Math.random() - 0.5) * 60;
-      const y = (Math.random() - 0.5) * 60;
-      sparkle.style.animation = `sparkleAnim 0.8s ease-out forwards`;
-      sparkle.style.setProperty('--x', `${x}px`);
-      sparkle.style.setProperty('--y', `${y}px`);
-      
-      progressBar.appendChild(sparkle);
-      
-      // Remove after animation
-      setTimeout(() => {
-        if (sparkle.parentNode) {
-          sparkle.parentNode.removeChild(sparkle);
-        }
-      }, 800);
-    }, i * 50);
-  }
-  
-  // Add overall glow
-  progressBar.style.boxShadow = '0 0 12px rgba(255, 235, 59, 0.8)';
-  setTimeout(() => {
-    progressBar.style.boxShadow = '';
-  }, 1200);
-}
   // Updated renderGameScreen to handle multi-word phrases with vertical layout
   function renderGameScreen() {
     // Calculate progress for current level
@@ -1800,8 +1762,8 @@ function celebrateCompletion() {
           </div>
         </div>
        
-      ${createProgressBarHTML(gameState.level, progressPercentage)}
-        
+        ${createProgressBarHTML()}
+
         <div class="letter-grid ${wordLength >= 8 ? 'nine-letter' : (wordLength >= 7 ? 'seven-letter' : (wordLength >= 5 ? 'six-letter' : (wordLength >= 4 ? 'five-letter' : '')))}">
           ${letterTilesHTML}
         </div>

@@ -1463,11 +1463,11 @@ function addTransliterationToggleStyles() {
       // Define wordToFindHTML with swapped positions and styles
         const wordToFindHTML = `
           <div class="word-meaning">
-              ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
+               ${gameState.currentWord.meaning}
           </div>
           
           <div class="word-to-find">
-            ${gameState.currentWord.meaning}
+               ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
           </div>
         `;
       

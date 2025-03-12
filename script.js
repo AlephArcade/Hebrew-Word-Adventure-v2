@@ -621,7 +621,7 @@ function updateProgressBar() {
   if (container) {
     // Create your own simple celebration directly here
     // Flash all segments briefly to indicate reset
-    segments.forEach(segment => {
+    segments.forEach((segment, index) => {
       segment.classList.add('filled');
       setTimeout(() => {
         segment.classList.remove('filled');

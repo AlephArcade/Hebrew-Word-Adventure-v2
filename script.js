@@ -1458,7 +1458,18 @@ function addTransliterationToggleStyles() {
     const totalWordsInLevel = selectedWordsInLevel.length;
     const completedWordsInLevel = gameState.completedWords[wordLength].length;
     const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
-  
+
+      // Update the word-to-find section to conditionally show transliteration
+    const wordToFindHTML = `
+      <div class="word-to-find">
+        ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
+      </div>
+      
+      <div class="word-meaning">
+        ${gameState.currentWord.meaning}
+      </div>
+    `;
+      
     // Create HTML for letter tiles
     let letterTilesHTML = '';
     for (let i = 0; i < gameState.shuffledLetters.length; i++) {
@@ -1621,17 +1632,7 @@ function addTransliterationToggleStyles() {
       </div>
     `;
 
-    // Update the word-to-find section to conditionally show transliteration
-    const wordToFindHTML = `
-      <div class="word-to-find">
-        ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
-      </div>
-      
-      <div class="word-meaning">
-        ${gameState.currentWord.meaning}
-      </div>
-    `;
-    
+       
     // Add event listeners to letter tiles
     document.querySelectorAll('.letter-tile').forEach(tile => {
       const index = parseInt(tile.dataset.index);

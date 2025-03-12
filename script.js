@@ -1459,16 +1459,16 @@ function addTransliterationToggleStyles() {
     const completedWordsInLevel = gameState.completedWords[wordLength].length;
     const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
 
-      // Update the word-to-find section to conditionally show transliteration
-    const wordToFindHTML = `
-      <div class="word-to-find">
-        ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
-      </div>
-      
-      <div class="word-meaning">
-        ${gameState.currentWord.meaning}
-      </div>
-    `;
+      // Define wordToFindHTML with swapped positions and styles
+        const wordToFindHTML = `
+          <div class="word-meaning">
+              ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
+          </div>
+          
+          <div class="word-to-find">
+            ${zgameState.currentWord.meaning}
+          </div>
+        `;
       
     // Create HTML for letter tiles
     let letterTilesHTML = '';

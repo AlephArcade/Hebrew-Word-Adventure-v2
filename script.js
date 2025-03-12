@@ -1623,8 +1623,6 @@ const wordBanks = {
     document.getElementById('transliteration-btn').addEventListener('click', toggleTransliteration);
   }
 
-    document.getElementById('transliteration-btn').addEventListener('click', toggleTransliteration);
-
   // Add this function to toggle the transliteration visibility
     function toggleTransliteration() {
       gameState.showTransliteration = !gameState.showTransliteration;

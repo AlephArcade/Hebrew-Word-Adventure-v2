@@ -761,3 +761,70 @@
     0% { opacity: 0.5; }
     100% { opacity: 0.9; }
   }
+
+/* Minimalist Progress Bar */
+.progress-segments {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 0 20px;
+}
+
+.progress-segment {
+  height: 8px;
+  flex: 1;
+  max-width: 25px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  position: relative;
+}
+
+.progress-segment.filled {
+  background-color: #FFEB3B;
+  box-shadow: 0 0 5px rgba(255, 235, 59, 0.3);
+}
+
+.progress-segment.pulse {
+  animation: segmentPulse 0.5s ease-out;
+}
+
+@keyframes segmentPulse {
+  0% { transform: scaleY(1); }
+  50% { transform: scaleY(1.5); }
+  100% { transform: scaleY(1); }
+}
+
+.progress-sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: #FFEB3B;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { transform: translate(0, 0) scale(0); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0; }
+}
+
+.progress-glow {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: radial-gradient(ellipse at center, rgba(255, 235, 59, 0.5) 0%, rgba(255, 235, 59, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes glow {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}

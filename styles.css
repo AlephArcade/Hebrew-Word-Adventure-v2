@@ -41,18 +41,18 @@
   
   /* Word display */
   .word-to-find {
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    opacity: 0.8;
+  }
+  
+  .word-meaning {
     font-size: 32px;
     margin-bottom: 5px;
     text-align: center;
     letter-spacing: 1px;
     font-weight: bold;
-  }
-  
-  .word-meaning {
-    font-size: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-    opacity: 0.8;
   }
   
   /* Stats container */

@@ -840,6 +840,8 @@ function celebrateCompletion(container) {
     // Create celebration effect
     createConfetti();
 
+    setTimeout(updateProgressBar, 100);
+      
       // Update the progress bar with animation
         updateProgressBar();
       

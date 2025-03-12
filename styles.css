@@ -733,7 +733,7 @@
     position: relative;
   }
   
-  .icon-button.transliteration-btn.active {
+  #transliteration-btn.active {
     background-color: rgba(255, 235, 59, 0.2);
     border-color: #FFEB3B;
   }

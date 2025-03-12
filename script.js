@@ -340,7 +340,7 @@ const wordBanks = {
     completed: false,
     animatingCorrect: false,
     wordsCompleted: 0,
-    showTransliteration: true,
+    showTransliteration: false,
     completedWords: {
       2: [],
       3: [],

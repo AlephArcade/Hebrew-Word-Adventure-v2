@@ -561,7 +561,116 @@ const wordBanks = {
       renderGame();
     }
   }
+  // Function to create the progress bar
+function createProgressBar() {
+  const progressContainer = document.createElement('div');
+  progressContainer.className = 'progress-segments';
   
+  // Create 10 segments
+  for (let i = 0; i < 10; i++) {
+    const segment = document.createElement('div');
+    segment.className = 'progress-segment';
+    segment.dataset.index = i;
+    progressContainer.appendChild(segment);
+  }
+  
+  return progressContainer;
+}
+
+// Function to update progress bar based on level and progress
+function updateProgressBar(container, level, progress) {
+  if (!container) return;
+  
+  const segments = container.querySelectorAll('.progress-segment');
+  const totalSegments = segments.length;
+  
+  // Calculate completed segments
+  // Level 1-9 maps to segments 0-8
+  const completedFullSegments = Math.min(level - 1, totalSegments);
+  
+  // Fill completed segments
+  segments.forEach((segment, index) => {
+    // Clear any previous animations
+    segment.classList.remove('pulse');
+    
+    // For segments before current level
+    if (index < completedFullSegments) {
+      if (!segment.classList.contains('filled')) {
+        segment.classList.add('filled');
+      }
+    }
+    // For current level's segment
+    else if (index === completedFullSegments) {
+      // If level is complete
+      if (progress >= 100) {
+        if (!segment.classList.contains('filled')) {
+          segment.classList.add('filled');
+          segment.classList.add('pulse');
+          
+          // Special effect for last segment
+          if (index === totalSegments - 1) {
+            celebrateCompletion(container);
+          }
+        }
+      }
+    }
+    // Future segments
+    else {
+      segment.classList.remove('filled');
+    }
+  });
+}
+
+// Function to create sparkle effect
+function createSparkle(element) {
+  const sparkle = document.createElement('div');
+  sparkle.className = 'progress-sparkle';
+  
+  // Random position
+  const x = (Math.random() - 0.5) * 50;
+  const y = (Math.random() - 0.5) * 50;
+  
+  sparkle.style.setProperty('--x', `${x}px`);
+  sparkle.style.setProperty('--y', `${y}px`);
+  sparkle.style.animation = `sparkle ${Math.random() * 0.5 + 0.5}s ease-out forwards`;
+  
+  // Random start position
+  sparkle.style.left = `${Math.random() * 100}%`;
+  sparkle.style.top = '50%';
+  
+  element.appendChild(sparkle);
+  
+  // Clean up
+  setTimeout(() => {
+    if (sparkle.parentNode) {
+      sparkle.parentNode.removeChild(sparkle);
+    }
+  }, 1000);
+}
+
+// Function to celebrate completion
+function celebrateCompletion(container) {
+  // Create glow effect
+  const glow = document.createElement('div');
+  glow.className = 'progress-glow';
+  glow.style.animation = 'glow 1s ease-out';
+  container.appendChild(glow);
+  
+  // Create multiple sparkles
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      createSparkle(container);
+    }, i * 50);
+  }
+  
+  // Clean up
+  setTimeout(() => {
+    if (glow.parentNode) {
+      glow.parentNode.removeChild(glow);
+    }
+  }, 1000);
+}
+
   // New function to check partial answers (first word in multi-word phrase)
   function checkPartialAnswer() {
     // Build the selected word
@@ -730,7 +839,10 @@ const wordBanks = {
         
     // Create celebration effect
     createConfetti();
-        
+
+      // Update the progress bar with animation
+        updateProgressBar();
+      
     // Check for level completion or next word after animation completes
     setTimeout(() => {
       // Check if we've completed all selected words at this level
@@ -1450,7 +1562,111 @@ function addTransliterationToggleStyles() {
       button.addEventListener('click', () => handleBonusSelection(option));
     });
   }
+
+// Helper function to create progress bar HTML
+function createProgressBarHTML(level, progressPercentage) {
+  // We'll use 10 segments for the progress bar
+  const totalSegments = 10;
   
+  // Calculate filled segments (levels 1-9 correspond to segments 0-8)
+  const filledSegments = level - 1;
+  
+  let segmentsHTML = '';
+  
+  for (let i = 0; i < totalSegments; i++) {
+    // Determine if this segment should be filled
+    const isFilled = i < filledSegments;
+    // For the current level's segment, fill it only if progress is 100%
+    const isCurrentLevelFilled = i === filledSegments && progressPercentage >= 100;
+    
+    // Build class name
+    const segmentClass = (isFilled || isCurrentLevelFilled) ? 'filled' : '';
+    
+    segmentsHTML += `
+      <div class="progress-segment ${segmentClass}" data-index="${i}"></div>
+    `;
+  }
+  
+  return `
+    <div class="progress-segments">
+      ${segmentsHTML}
+    </div>
+  `;
+}
+
+// Helper function to update progress bar after rendering
+function updateProgressBar() {
+  // Find segments
+  const segments = document.querySelectorAll('.progress-segment');
+  if (!segments.length) return;
+  
+  const wordLength = getWordLengthForLevel(gameState.level);
+  const selectedWordsInLevel = gameState.selectedWordsForLevel[wordLength] || [];
+  const totalWordsInLevel = selectedWordsInLevel.length;
+  const completedWordsInLevel = gameState.completedWords[wordLength].length;
+  const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
+  
+  // Get current level index (0-based)
+  const currentLevelIndex = gameState.level - 1;
+  
+  // Check if the progress just reached 100%
+  const isLevelJustCompleted = progressPercentage >= 100 && 
+                               !segments[currentLevelIndex].classList.contains('filled');
+  
+  // Update the current level's segment if needed
+  if (isLevelJustCompleted && currentLevelIndex < segments.length) {
+    segments[currentLevelIndex].classList.add('filled');
+    segments[currentLevelIndex].classList.add('pulse');
+    
+    // If this is the last segment, add celebration
+    if (currentLevelIndex === segments.length - 1) {
+      celebrateCompletion();
+    }
+  }
+}
+
+// Helper function for level completion celebration
+function celebrateCompletion() {
+  const progressBar = document.querySelector('.progress-segments');
+  if (!progressBar) return;
+  
+  // Create some sparkle elements
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.position = 'absolute';
+      sparkle.style.width = '4px';
+      sparkle.style.height = '4px';
+      sparkle.style.backgroundColor = '#FFEB3B';
+      sparkle.style.borderRadius = '50%';
+      sparkle.style.left = `${Math.random() * 100}%`;
+      sparkle.style.top = '50%';
+      
+      // Set random animation
+      const x = (Math.random() - 0.5) * 60;
+      const y = (Math.random() - 0.5) * 60;
+      sparkle.style.animation = `sparkleAnim 0.8s ease-out forwards`;
+      sparkle.style.setProperty('--x', `${x}px`);
+      sparkle.style.setProperty('--y', `${y}px`);
+      
+      progressBar.appendChild(sparkle);
+      
+      // Remove after animation
+      setTimeout(() => {
+        if (sparkle.parentNode) {
+          sparkle.parentNode.removeChild(sparkle);
+        }
+      }, 800);
+    }, i * 50);
+  }
+  
+  // Add overall glow
+  progressBar.style.boxShadow = '0 0 12px rgba(255, 235, 59, 0.8)';
+  setTimeout(() => {
+    progressBar.style.boxShadow = '';
+  }, 1200);
+}
   // Updated renderGameScreen to handle multi-word phrases with vertical layout
   function renderGameScreen() {
     // Calculate progress for current level
@@ -1582,14 +1798,7 @@ function addTransliterationToggleStyles() {
           </div>
         </div>
        
-        <div class="progress-wrapper">
-          <div class="progress-inner">
-            <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
-            <div class="progress-container">
-              <div class="progress-bar" style="width: ${progressPercentage}%"></div>
-            </div>
-          </div>
-        </div>
+      ${createProgressBarHTML(gameState.level, progressPercentage)}
         
         <div class="letter-grid ${wordLength >= 8 ? 'nine-letter' : (wordLength >= 7 ? 'seven-letter' : (wordLength >= 5 ? 'six-letter' : (wordLength >= 4 ? 'five-letter' : '')))}">
           ${letterTilesHTML}
@@ -1873,7 +2082,10 @@ function addTransliterationToggleStyles() {
     
     // Add secret tap detector to the game container
     gameContainer.addEventListener('click', handleDevModeActivation);
-    
+
+    // Add progress bar update with a slight delay to ensure the DOM is ready
+    setTimeout(updateProgressBar, 100);
+      
     // Start the game with the start screen
     renderGame();
   });

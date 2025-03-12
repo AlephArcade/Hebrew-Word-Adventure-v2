@@ -1604,7 +1604,7 @@ const wordBanks = {
   function renderStartScreen() {
     gameContainer.innerHTML = `
       <div class="start-screen">
-        <h1>Hebrew Word Adventure</h1>
+        <h1>Hebrew Shuffle</h1>
         <p>Master Hebrew letters by putting them in the right order!</p>
         <p>Includes special Purim words!</p>
         <button class="primary-btn" id="start-btn">START QUEST</button>

@@ -1547,13 +1547,8 @@ function addTransliterationToggleStyles() {
       
       <!-- Game content starts here -->
       <div class="game-content-wrapper">
-        <div class="word-to-find">
-          ${gameState.currentWord.transliteration.toUpperCase()}
-        </div>
-        
-        <div class="word-meaning">
-          ${gameState.currentWord.meaning}
-        </div>
+      
+        ${wordToFindHTML}
        
         <div class="stats-container">
           <div class="stat-item">

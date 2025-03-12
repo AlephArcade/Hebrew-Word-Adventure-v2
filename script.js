@@ -615,17 +615,32 @@ function updateProgressBar() {
   });
   
   // If all 10 segments are filled, celebrate!
-  if (segmentsToFill === 0 && totalWordsCompleted > 0 && totalWordsCompleted >= 10) {
-    celebrateCompletion(document.querySelector('.progress-segments'));
-    
+    if (segmentsToFill === 0 && totalWordsCompleted > 0) {
+  // Use container without the celebrateCompletion or handle the null case
+  const container = document.querySelector('.progress-segments');
+  if (container) {
+    // Create your own simple celebration directly here
     // Flash all segments briefly to indicate reset
-    segments.forEach((segment, index) => {
+    segments.forEach(segment => {
       segment.classList.add('filled');
       setTimeout(() => {
         segment.classList.remove('filled');
-        gameState.progressSegments[index] = false;
+        gameState.progressSegments[index] = false; // Make sure to update state
       }, 500);
     });
+    
+    // Create a simple glow effect
+    const glow = document.createElement('div');
+    glow.className = 'progress-glow';
+    glow.style.animation = 'glow 1s ease-out';
+    container.appendChild(glow);
+    
+    // Clean up after animation
+    setTimeout(() => {
+      if (glow.parentNode) {
+        glow.parentNode.removeChild(glow);
+      }
+    }, 1000);
   }
 }
 
@@ -1566,8 +1581,10 @@ function updateProgressBar() {
     // Fill segments for completed words
     if (index < segmentsToFill) {
       segment.classList.add('filled');
+      gameState.progressSegments[index] = true;  // UPDATE THE STATE - CRITICAL!
     } else {
       segment.classList.remove('filled');
+      gameState.progressSegments[index] = false; // UPDATE THE STATE - CRITICAL!
     }
     
     // Add pulse animation to the most recently completed word
@@ -1578,13 +1595,57 @@ function updateProgressBar() {
   
   // If all 10 segments are filled, celebrate!
   if (segmentsToFill === 0 && totalWordsCompleted > 0) {
-    celebrateCompletion(document.querySelector('.progress-segments'));
+    // Create our own celebration effects without using celebrateCompletion
+    const container = document.querySelector('.progress-segments');
+    if (container) {
+      // Add glow effect
+      const glow = document.createElement('div');
+      glow.className = 'progress-glow';
+      glow.style.animation = 'glow 1s ease-out';
+      container.appendChild(glow);
+      
+      // Clean up glow effect
+      setTimeout(() => {
+        if (glow.parentNode) {
+          glow.parentNode.removeChild(glow);
+        }
+      }, 1000);
+      
+      // Create sparkles
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const sparkle = document.createElement('div');
+          sparkle.className = 'progress-sparkle';
+          
+          // Random position
+          const x = (Math.random() - 0.5) * 50;
+          const y = (Math.random() - 0.5) * 50;
+          
+          sparkle.style.setProperty('--x', `${x}px`);
+          sparkle.style.setProperty('--y', `${y}px`);
+          sparkle.style.animation = `sparkle ${Math.random() * 0.5 + 0.5}s ease-out forwards`;
+          
+          sparkle.style.left = `${Math.random() * 100}%`;
+          sparkle.style.top = '50%';
+          
+          container.appendChild(sparkle);
+          
+          // Clean up
+          setTimeout(() => {
+            if (sparkle.parentNode) {
+              sparkle.parentNode.removeChild(sparkle);
+            }
+          }, 1000);
+        }, i * 50);
+      }
+    }
     
     // Flash all segments briefly to indicate reset
-    segments.forEach(segment => {
+    segments.forEach((segment, index) => {
       segment.classList.add('filled');
       setTimeout(() => {
         segment.classList.remove('filled');
+        gameState.progressSegments[index] = false; // UPDATE THE STATE - CRITICAL!
       }, 500);
     });
   }

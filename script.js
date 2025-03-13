@@ -1610,17 +1610,20 @@ function updateProgressBar() {
     const completedWordsInLevel = gameState.completedWords[wordLength].length;
     const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
     const transliterationBonusHTML = !gameState.showTransliteration && !gameState.transliterationShownForCurrentWord
-        ? `<div class="bonus-indicator" title="Complete this word without transliteration for a 50% bonus!">+50% BONUS ACTIVE</div>`
-        : '';
+        
       // Define wordToFindHTML with swapped positions and styles
         const wordToFindHTML = `
           <div class="word-meaning">
                ${gameState.currentWord.meaning}
           </div>
           
-          <div class="word-to-find">
-               ${gameState.showTransliteration ? gameState.currentWord.transliteration.toUpperCase() : ''}
-          </div>
+            <div class="word-to-find">
+              ${gameState.showTransliteration 
+                ? gameState.currentWord.transliteration.toUpperCase() 
+                : (!gameState.transliterationShownForCurrentWord 
+                   ? '<div class="bonus-indicator">+50% BONUS ACTIVE</div>' 
+                   : '')}
+            </div>
         `;
       
     // Create HTML for letter tiles
@@ -1713,8 +1716,6 @@ function updateProgressBar() {
       <div class="game-content-wrapper">
       
         ${wordToFindHTML}
-
-        ${transliterationBonusHTML}
 
         <div class="stats-container">
           <div class="stat-item">

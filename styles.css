@@ -751,18 +751,33 @@
     min-height: 36px; /* Ensure consistent height with/without text */
   }
 
- .bonus-indicator {
-      background-color: rgba(255, 215, 0, 0.2);
+     .icon-button.transliteration-btn {
+      background-color: transparent;
+      position: relative;
+    }
+    
+    .icon-button.transliteration-btn.active {
+      background-color: rgba(255, 235, 59, 0.2);
+      border-color: #FFEB3B;
+    }
+    
+        
+    .word-to-find {
+      min-height: 36px; /* Ensure consistent height with/without text */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    /* Style the bonus indicator to match transliteration style */
+    .bonus-indicator {
       color: #FFD700;
       font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 12px;
-      margin: 5px auto;
-      font-size: 12px;
+      font-size: 14px;
       text-align: center;
-      border: 1px solid #FFD700;
+      letter-spacing: 1px;
       animation: pulse 1.5s infinite;
-      width: fit-content;
+      text-transform: uppercase; /* Match the uppercase style of transliteration */
     }
 
 /* Minimalist Progress Bar */

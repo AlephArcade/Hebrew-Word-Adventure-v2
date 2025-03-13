@@ -816,7 +816,7 @@ function createProgressBar() {
   // Updated startBonusRound to randomize options once
   function startBonusRound() {
     gameState.inBonusRound = true;
-    gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
+    gameState.bonusTimeRemaining = 20; // 20 seconds for bonus round
     
     // Choose a random nikud challenge based on current level
     // Use the current level's challenges, or level 6 challenges if level > 6

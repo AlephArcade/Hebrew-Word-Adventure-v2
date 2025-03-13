@@ -367,7 +367,8 @@ const wordBanks = {
     currentPartIndex: 0,  // Which word we're currently solving (0=first, 1=second)
     completedLetters: [], // Letters already used in completed words
     partialWordCompleted: false, // Flag for animation between words
-    selectedWordsForLevel: {}
+    selectedWordsForLevel: {},
+    transliterationShownForCurrentWord: false
   };
   
   // Fixed startGame function that properly initializes all properties
@@ -412,7 +413,8 @@ const wordBanks = {
       currentPartIndex: 0,
       completedLetters: [],
       partialWordCompleted: false,
-      selectedWordsForLevel: {} // Initialize the selected words property
+      selectedWordsForLevel: {},
+      transliterationShownForCurrentWord: false
     };
       
     setupWord();
@@ -422,6 +424,8 @@ const wordBanks = {
   function setupWord() {
     const wordLength = getWordLengthForLevel(gameState.level);
     const wordsForLevel = wordBanks[wordLength];
+
+    gameState.transliterationShownForCurrentWord = gameState.showTransliteration;
   
      // NEW: Check if we already have selected words for this level
     if (!gameState.selectedWordsForLevel[wordLength]) {
@@ -731,7 +735,14 @@ function createProgressBar() {
     if (gameState.bonusActive) {
       pointsEarned = Math.round(pointsEarned * 1.5); // 50% bonus
     }
-        
+    // Apply transliteration bonus if transliteration was never shown
+      let transliterationBonusApplied = false;
+          if (!gameState.transliterationShownForCurrentWord) {
+            const transliterationBonus = Math.round(pointsEarned * 0.5); // 50% bonus
+            pointsEarned += transliterationBonus;
+            transliterationBonusApplied = true;
+          }    
+      
     gameState.score += pointsEarned;
     gameState.streak += 1;
         
@@ -739,12 +750,16 @@ function createProgressBar() {
     gameState.bonusActive = gameState.streak >= 3;
         
     // Show appropriate message
-    if (gameState.bonusActive) {
-      showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
-    } else {
-      showMessage(`AWESOME! +${pointsEarned} points!`);
-    }
-        
+
+      // Show appropriate message with transliteration bonus if applicable
+      if (transliterationBonusApplied) {
+        showMessage(`+${pointsEarned} points with HARD MODE bonus! 💪`);
+      } else if (gameState.bonusActive) {
+        showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
+      } else {
+        showMessage(`AWESOME! +${pointsEarned} points!`);
+      }
+         
     // Create celebration effect
     createConfetti();
       
@@ -1594,7 +1609,9 @@ function updateProgressBar() {
     const totalWordsInLevel = selectedWordsInLevel.length;
     const completedWordsInLevel = gameState.completedWords[wordLength].length;
     const progressPercentage = (completedWordsInLevel / totalWordsInLevel) * 100;
-
+    const transliterationBonusHTML = !gameState.showTransliteration && !gameState.transliterationShownForCurrentWord
+        ? `<div class="bonus-indicator" title="Complete this word without transliteration for a 50% bonus!">+50% BONUS ACTIVE</div>`
+        : '';
       // Define wordToFindHTML with swapped positions and styles
         const wordToFindHTML = `
           <div class="word-meaning">
@@ -1696,7 +1713,9 @@ function updateProgressBar() {
       <div class="game-content-wrapper">
       
         ${wordToFindHTML}
-       
+
+        ${transliterationBonusHTML}
+
         <div class="stats-container">
           <div class="stat-item">
             <div class="stat-label">LEVEL</div>
@@ -1780,6 +1799,9 @@ function updateProgressBar() {
   // Add this function to toggle the transliteration visibility
     function toggleTransliteration() {
       gameState.showTransliteration = !gameState.showTransliteration;
+          if (gameState.showTransliteration) {
+            gameState.transliterationShownForCurrentWord = true;
+          }
       renderGame();
     }
   function renderStartScreen() {
